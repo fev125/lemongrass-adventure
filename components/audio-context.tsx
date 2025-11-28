@@ -37,17 +37,6 @@ export function AudioProvider({ children, soundEnabled }: AudioProviderProps) {
   const [isBgmPlaying, setIsBgmPlaying] = useState(false)
   const bgmAudioRef = useRef<HTMLAudioElement | null>(null)
 
-  // 自动播放背景音乐
-  useEffect(() => {
-    if (soundEnabled) {
-      // 延迟一点时间，确保 AudioContext 已初始化
-      const timer = setTimeout(() => {
-        playBgm()
-      }, 500)
-      return () => clearTimeout(timer)
-    }
-  }, [soundEnabled, playBgm])
-
   useEffect(() => {
     const initAudio = () => {
       if (!audioContextRef.current) {
@@ -365,7 +354,12 @@ export function AudioProvider({ children, soundEnabled }: AudioProviderProps) {
       bgmAudioRef.current = new Audio("/bgm.mp3")
       bgmAudioRef.current.loop = true
       bgmAudioRef.current.volume = 1.0 // 正常音量
+      bgmAudioRef.current.muted = false // 确保不静音
     }
+
+    // 确保不静音（每次播放前检查）
+    bgmAudioRef.current.muted = false
+    bgmAudioRef.current.volume = 1.0
 
     // 播放
     bgmAudioRef.current.play().then(() => {
@@ -384,6 +378,17 @@ export function AudioProvider({ children, soundEnabled }: AudioProviderProps) {
     }
     setIsBgmPlaying(false)
   }, [])
+
+  // 自动播放背景音乐（组件挂载时）
+  useEffect(() => {
+    if (soundEnabled) {
+      // 延迟一点时间，确保组件完全初始化
+      const timer = setTimeout(() => {
+        playBgm()
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [soundEnabled, playBgm])
 
   return (
     <AudioCtx.Provider
