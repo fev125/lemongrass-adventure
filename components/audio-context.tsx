@@ -35,10 +35,18 @@ export function AudioProvider({ children, soundEnabled }: AudioProviderProps) {
   const [ttsAvailable, setTtsAvailable] = useState(false)
   const preferredVoiceRef = useRef<SpeechSynthesisVoice | null>(null)
   const [isBgmPlaying, setIsBgmPlaying] = useState(false)
-  const bgmIntervalRef = useRef<NodeJS.Timeout | null>(null)
-  const bgmOscillatorsRef = useRef<OscillatorNode[]>([])
-  const bgmGainRef = useRef<GainNode | null>(null)
-  const bgmShouldPlayRef = useRef(false)
+  const bgmAudioRef = useRef<HTMLAudioElement | null>(null)
+
+  // 自动播放背景音乐
+  useEffect(() => {
+    if (soundEnabled) {
+      // 延迟一点时间，确保 AudioContext 已初始化
+      const timer = setTimeout(() => {
+        playBgm()
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [soundEnabled, playBgm])
 
   useEffect(() => {
     const initAudio = () => {
@@ -321,13 +329,16 @@ export function AudioProvider({ children, soundEnabled }: AudioProviderProps) {
         // "canceled" and "interrupted" are expected when we call speechSynthesis.cancel()
         if (e.error === "canceled" || e.error === "interrupted") {
           console.log("[TTS] ⏹️ 语音已停止:", e.error)
+        } else if (e.error === "not-allowed") {
+          // 用户未交互时自动播放被阻止，这是正常的
+          console.log("[TTS] ⚠️ 需要用户交互后才能播放语音")
+        } else if (e.error === "synthesis-unavailable" || e.error === "voice-unavailable") {
+          console.log("[TTS] ⚠️ 语音合成暂不可用")
         } else {
-          console.error("[TTS] ❌ 语音播放错误:", {
-            error: e.error,
-            charIndex: e.charIndex,
-            elapsedTime: e.elapsedTime,
-            name: e.name,
-          })
+          // 其他错误，只在有具体错误信息时打印
+          if (e.error) {
+            console.warn("[TTS] ⚠️ 语音播放异常:", e.error)
+          }
         }
         setIsSpeaking(false)
       }
@@ -342,131 +353,35 @@ export function AudioProvider({ children, soundEnabled }: AudioProviderProps) {
     setIsSpeaking(false)
   }, [])
 
-  // 欢快的背景音乐 - 使用 Web Audio API 生成简单的循环旋律
+  // 背景音乐 - 播放 MP3 文件
   const playBgm = useCallback(() => {
-    if (!soundEnabled || !audioContextRef.current || bgmShouldPlayRef.current) return
+    if (!soundEnabled) return
 
-    const ctx = audioContextRef.current
-    if (ctx.state === "suspended") ctx.resume()
+    // 如果已经在播放，不重复创建
+    if (bgmAudioRef.current && !bgmAudioRef.current.paused) return
 
-    bgmShouldPlayRef.current = true
-
-    // 创建主音量节点
-    const masterGain = ctx.createGain()
-    masterGain.gain.setValueAtTime(0.12, ctx.currentTime)
-    masterGain.connect(ctx.destination)
-    bgmGainRef.current = masterGain
-
-    // 欢快的儿童歌曲旋律音符 (简化版小星星 + 欢快节奏)
-    const melody = [
-      // C大调欢快旋律
-      { note: 523.25, duration: 0.3 }, // C5
-      { note: 523.25, duration: 0.3 }, // C5
-      { note: 783.99, duration: 0.3 }, // G5
-      { note: 783.99, duration: 0.3 }, // G5
-      { note: 880.00, duration: 0.3 }, // A5
-      { note: 880.00, duration: 0.3 }, // A5
-      { note: 783.99, duration: 0.6 },  // G5 (长音)
-      { note: 698.46, duration: 0.3 }, // F5
-      { note: 698.46, duration: 0.3 }, // F5
-      { note: 659.25, duration: 0.3 }, // E5
-      { note: 659.25, duration: 0.3 }, // E5
-      { note: 587.33, duration: 0.3 }, // D5
-      { note: 587.33, duration: 0.3 }, // D5
-      { note: 523.25, duration: 0.6 },  // C5 (长音)
-      // 休止符 (静音间隔)
-      { note: 0, duration: 0.5 },
-    ]
-
-    let noteIndex = 0
-
-    const playNote = () => {
-      if (!bgmShouldPlayRef.current || !bgmGainRef.current || !audioContextRef.current) return
-
-      const currentCtx = audioContextRef.current
-      const note = melody[noteIndex]
-
-      // 如果不是休止符，播放音符
-      if (note.note > 0) {
-        const osc = currentCtx.createOscillator()
-        const noteGain = currentCtx.createGain()
-
-        // 使用三角波，更柔和适合儿童
-        osc.type = "triangle"
-        osc.frequency.setValueAtTime(note.note, currentCtx.currentTime)
-
-        // 音符包络
-        noteGain.gain.setValueAtTime(0, currentCtx.currentTime)
-        noteGain.gain.linearRampToValueAtTime(0.25, currentCtx.currentTime + 0.03)
-        noteGain.gain.linearRampToValueAtTime(0.15, currentCtx.currentTime + note.duration * 0.5)
-        noteGain.gain.linearRampToValueAtTime(0, currentCtx.currentTime + note.duration * 0.9)
-
-        osc.connect(noteGain)
-        noteGain.connect(bgmGainRef.current)
-
-        osc.start(currentCtx.currentTime)
-        osc.stop(currentCtx.currentTime + note.duration)
-
-        bgmOscillatorsRef.current.push(osc)
-
-        // 清理已结束的振荡器
-        osc.onended = () => {
-          const idx = bgmOscillatorsRef.current.indexOf(osc)
-          if (idx > -1) bgmOscillatorsRef.current.splice(idx, 1)
-        }
-      }
-
-      noteIndex = (noteIndex + 1) % melody.length
+    // 创建或复用 Audio 元素
+    if (!bgmAudioRef.current) {
+      bgmAudioRef.current = new Audio("/bgm.mp3")
+      bgmAudioRef.current.loop = true
+      bgmAudioRef.current.volume = 1.0 // 正常音量
     }
 
-    // 播放第一个音符
-    playNote()
-
-    // 设置循环播放
-    const scheduleNext = () => {
-      if (!bgmShouldPlayRef.current) return
-
-      const prevIndex = noteIndex === 0 ? melody.length - 1 : noteIndex - 1
-      const currentDelay = melody[prevIndex].duration * 1000
-
-      bgmIntervalRef.current = setTimeout(() => {
-        if (bgmShouldPlayRef.current) {
-          playNote()
-          scheduleNext()
-        }
-      }, currentDelay)
-    }
-
-    scheduleNext()
-    setIsBgmPlaying(true)
+    // 播放
+    bgmAudioRef.current.play().then(() => {
+      setIsBgmPlaying(true)
+      console.log("[BGM] 🎵 背景音乐开始播放")
+    }).catch((err) => {
+      console.log("[BGM] ⚠️ 背景音乐播放失败（需要用户交互）:", err.message)
+    })
   }, [soundEnabled])
 
   const stopBgm = useCallback(() => {
-    // 设置停止标志
-    bgmShouldPlayRef.current = false
-
-    // 停止所有振荡器
-    bgmOscillatorsRef.current.forEach((osc) => {
-      try {
-        osc.stop()
-      } catch {
-        // 已经停止了
-      }
-    })
-    bgmOscillatorsRef.current = []
-
-    // 清除定时器
-    if (bgmIntervalRef.current) {
-      clearTimeout(bgmIntervalRef.current)
-      bgmIntervalRef.current = null
+    if (bgmAudioRef.current) {
+      bgmAudioRef.current.pause()
+      bgmAudioRef.current.currentTime = 0
+      console.log("[BGM] ⏹️ 背景音乐已停止")
     }
-
-    // 断开音量节点
-    if (bgmGainRef.current) {
-      bgmGainRef.current.disconnect()
-      bgmGainRef.current = null
-    }
-
     setIsBgmPlaying(false)
   }, [])
 
