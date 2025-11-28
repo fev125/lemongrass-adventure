@@ -105,16 +105,16 @@ export function LevelQuiz({ level, levelIndex, totalLevels, onAnswer, consecutiv
         {/* 进度星星 */}
         <StarProgress current={levelIndex} total={totalLevels} />
 
-        {/* 返回按钮 - 更小更不显眼，避免误触 */}
+        {/* 返回按钮 - 适中大小，易于点击 */}
         {onBack && (
           <button
             onClick={() => {
               playClick()
               onBack()
             }}
-            className="absolute top-4 left-4 w-12 h-12 rounded-full bg-white/80 backdrop-blur border-2 border-gray-200 text-gray-500 flex items-center justify-center shadow-lg active:scale-90 transition-transform z-20"
+            className="absolute top-4 left-4 w-14 h-14 rounded-full bg-white/90 backdrop-blur border-3 border-gray-200 text-gray-500 flex items-center justify-center shadow-lg active:scale-90 transition-all hover:border-green-300 hover:text-green-600 z-20"
           >
-            <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current">
+            <svg viewBox="0 0 24 24" className="w-7 h-7 fill-current">
               <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
             </svg>
           </button>
@@ -145,8 +145,8 @@ export function LevelQuiz({ level, levelIndex, totalLevels, onAnswer, consecutiv
           </div>
         </button>
 
-        {/* 选项卡片 - 更大的触摸区域 */}
-        <div className="grid grid-cols-2 gap-3 pt-2">
+        {/* 选项卡片 - 更大的触摸区域和间距 */}
+        <div className="grid grid-cols-2 gap-4 pt-2">
           {level.options.map((option, index) => {
             const isSelected = selectedId === option.id
             const isCorrectAnswer = isSelected && option.isCorrect
@@ -164,10 +164,10 @@ export function LevelQuiz({ level, levelIndex, totalLevels, onAnswer, consecutiv
                     active:scale-95
                     ${
                       isCorrectAnswer
-                        ? "border-green-400 bg-green-50 scale-105 ring-4 ring-green-300"
+                        ? "border-green-400 bg-green-50 scale-105 ring-4 ring-green-300 option-correct-glow"
                         : isWrongAnswer
-                          ? "border-red-400 bg-red-50 animate-wiggle"
-                          : "border-gray-200 hover:border-green-300"
+                          ? "border-red-400 bg-red-50 animate-wiggle option-wrong-glow"
+                          : "border-gray-200 hover:border-green-300 hover:shadow-2xl"
                     }
                   `}
                   style={{ animationDelay: `${index * 0.1}s` }}
@@ -196,37 +196,60 @@ export function LevelQuiz({ level, levelIndex, totalLevels, onAnswer, consecutiv
                   {/* 标签 - 更醒目 */}
                   <p className="text-lg font-black text-green-800 py-1">{option.label}</p>
 
-                  {/* 正确时的星星奖励 */}
+                  {/* 音频按钮 - 卡片内右下角小图标 */}
+                  {showAudioButtons && option.featureAudio && ttsAvailable && (
+                    <button
+                      onClick={(e) => handlePlayFeatureAudio(e, option)}
+                      disabled={selectedId !== null}
+                      className={`
+                        absolute bottom-2 right-2 w-10 h-10 rounded-full
+                        flex items-center justify-center
+                        transition-all duration-200
+                        active:scale-90
+                        ${
+                          playingAudioId === option.id
+                            ? "bg-green-500 text-white shadow-lg"
+                            : "bg-green-100 text-green-600 hover:bg-green-200"
+                        }
+                        disabled:opacity-50
+                      `}
+                    >
+                      <Volume2 className={`w-5 h-5 ${playingAudioId === option.id ? "animate-pulse" : ""}`} />
+                    </button>
+                  )}
+
+                  {/* 正确时的星星奖励 + 文字动画 + 粒子效果 */}
                   {isCorrectAnswer && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      {/* 主星星 */}
                       <span className="text-6xl animate-bounce-in">⭐</span>
+
+                      {/* 鼓励文字 */}
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-float-up">
+                        <p className="text-3xl font-black rainbow-text whitespace-nowrap">
+                          太棒了！
+                        </p>
+                      </div>
+
+                      {/* 粒子爆炸效果 */}
+                      <span className="particle text-2xl" style={{ '--tx': '-50px', '--ty': '-60px' } as React.CSSProperties}>✨</span>
+                      <span className="particle text-2xl" style={{ '--tx': '50px', '--ty': '-60px' } as React.CSSProperties}>🌟</span>
+                      <span className="particle text-xl" style={{ '--tx': '-70px', '--ty': '0px' } as React.CSSProperties}>💫</span>
+                      <span className="particle text-xl" style={{ '--tx': '70px', '--ty': '0px' } as React.CSSProperties}>⭐</span>
+                      <span className="particle text-2xl" style={{ '--tx': '-40px', '--ty': '50px' } as React.CSSProperties}>🎉</span>
+                      <span className="particle text-2xl" style={{ '--tx': '40px', '--ty': '50px' } as React.CSSProperties}>🎊</span>
+                    </div>
+                  )}
+
+                  {/* 错误时的提示气泡 */}
+                  {isWrongAnswer && (
+                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 error-bubble pointer-events-none z-20">
+                      <div className="bg-amber-100 border-2 border-amber-400 rounded-full px-4 py-2 shadow-lg">
+                        <p className="text-amber-700 font-bold text-sm whitespace-nowrap">再看看这个哦~</p>
+                      </div>
                     </div>
                   )}
                 </button>
-
-                {/* 音频按钮 - 更大更直观 */}
-                {showAudioButtons && option.featureAudio && ttsAvailable && (
-                  <button
-                    onClick={(e) => handlePlayFeatureAudio(e, option)}
-                    disabled={selectedId !== null}
-                    className={`
-                      mt-2 w-full h-14 rounded-2xl border-3 shadow-lg
-                      flex items-center justify-center gap-2
-                      transition-all duration-200
-                      active:scale-95
-                      ${
-                        playingAudioId === option.id
-                          ? "bg-green-100 border-green-400 text-green-700"
-                          : "bg-white border-green-300 text-green-600"
-                      }
-                      disabled:opacity-50
-                    `}
-                  >
-                    <Volume2 className={`w-6 h-6 ${playingAudioId === option.id ? "animate-pulse" : ""}`} />
-                    <span className="font-bold">听一听</span>
-                    <span className="text-xl">👂</span>
-                  </button>
-                )}
               </div>
             )
           })}
