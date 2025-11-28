@@ -28,90 +28,163 @@ function KnowledgeCard({
     {
       icon: (
         <svg viewBox="0 0 80 80" className="w-full h-full">
-          {/* 云朵 */}
-          <g opacity="0.6">
-            <ellipse cx="15" cy="12" rx="8" ry="4" fill="white" />
-            <ellipse cx="22" cy="10" rx="6" ry="3" fill="white" />
-            <ellipse cx="10" cy="10" rx="5" ry="2.5" fill="white" />
-          </g>
-          {/* 太阳 - 带旋转光芒 */}
-          <circle cx="60" cy="18" r="10" fill="#fbbf24">
-            <animate attributeName="r" values="10;12;10" dur="2s" repeatCount="indefinite" />
+          <defs>
+            {/* 香茅叶片渐变 */}
+            <linearGradient id="leafGrad1" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#d9f99d" />
+              <stop offset="30%" stopColor="#86efac" />
+              <stop offset="100%" stopColor="#22c55e" />
+            </linearGradient>
+            <linearGradient id="leafGrad2" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#fef9c3" />
+              <stop offset="25%" stopColor="#bbf7d0" />
+              <stop offset="100%" stopColor="#4ade80" />
+            </linearGradient>
+            <linearGradient id="leafGrad3" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#ecfccb" />
+              <stop offset="35%" stopColor="#86efac" />
+              <stop offset="100%" stopColor="#16a34a" />
+            </linearGradient>
+            {/* 太阳渐变 */}
+            <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#fef08a" />
+              <stop offset="70%" stopColor="#fbbf24" />
+              <stop offset="100%" stopColor="#f59e0b" />
+            </radialGradient>
+          </defs>
+
+          {/* 天空背景光晕 */}
+          <ellipse cx="65" cy="18" rx="20" ry="15" fill="#fef3c7" opacity="0.5" />
+
+          {/* 太阳 */}
+          <circle cx="65" cy="16" r="9" fill="url(#sunGrad)">
+            <animate attributeName="r" values="9;10;9" dur="3s" repeatCount="indefinite" />
           </circle>
-          <g>
-            <animateTransform attributeName="transform" type="rotate" from="0 60 18" to="360 60 18" dur="15s" repeatCount="indefinite" />
-            {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+          {/* 太阳光芒 */}
+          <g opacity="0.8">
+            {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle, i) => (
               <line
                 key={i}
-                x1={60 + 12 * Math.cos((angle * Math.PI) / 180)}
-                y1={18 + 12 * Math.sin((angle * Math.PI) / 180)}
-                x2={60 + 18 * Math.cos((angle * Math.PI) / 180)}
-                y2={18 + 18 * Math.sin((angle * Math.PI) / 180)}
+                x1={65 + 11 * Math.cos((angle * Math.PI) / 180)}
+                y1={16 + 11 * Math.sin((angle * Math.PI) / 180)}
+                x2={65 + 15 * Math.cos((angle * Math.PI) / 180)}
+                y2={16 + 15 * Math.sin((angle * Math.PI) / 180)}
                 stroke="#fbbf24"
-                strokeWidth="2"
+                strokeWidth="1.5"
                 strokeLinecap="round"
-              />
+              >
+                <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2s" begin={`${i * 0.15}s`} repeatCount="indefinite" />
+              </line>
             ))}
           </g>
-          {/* 下落的水滴 */}
-          {[{x: 12, delay: 0}, {x: 22, delay: 0.5}, {x: 32, delay: 1}].map((drop, i) => (
+
+          {/* 云朵 */}
+          <g opacity="0.7">
+            <ellipse cx="18" cy="14" rx="10" ry="5" fill="white" />
+            <ellipse cx="26" cy="12" rx="7" ry="4" fill="white" />
+            <ellipse cx="12" cy="12" rx="6" ry="3" fill="white" />
+          </g>
+
+          {/* 水滴 */}
+          {[{x: 8, delay: 0}, {x: 18, delay: 0.6}, {x: 28, delay: 1.2}].map((drop, i) => (
             <g key={i}>
-              <path d={`M ${drop.x} 25 Q ${drop.x - 3} 32 ${drop.x} 35 Q ${drop.x + 3} 32 ${drop.x} 25`} fill="#7dd3fc">
-                <animate attributeName="opacity" values="1;0.8;0" dur="1.5s" begin={`${drop.delay}s`} repeatCount="indefinite" />
-                <animateTransform attributeName="transform" type="translate" values="0,0;0,35;0,0" dur="1.5s" begin={`${drop.delay}s`} repeatCount="indefinite" />
+              <path d={`M ${drop.x} 22 Q ${drop.x - 2.5} 28 ${drop.x} 32 Q ${drop.x + 2.5} 28 ${drop.x} 22`} fill="#7dd3fc" stroke="#38bdf8" strokeWidth="0.5">
+                <animate attributeName="opacity" values="0.9;0.7;0" dur="1.8s" begin={`${drop.delay}s`} repeatCount="indefinite" />
+                <animateTransform attributeName="transform" type="translate" values="0,0;0,38;0,0" dur="1.8s" begin={`${drop.delay}s`} repeatCount="indefinite" />
               </path>
             </g>
           ))}
-          {/* 小蝴蝶1 */}
-          <g>
-            <animateMotion path="M0,0 Q15,-8 30,0 Q15,8 0,0" dur="4s" repeatCount="indefinite" />
-            <g transform="translate(35, 35)">
-              <ellipse cx="0" cy="0" rx="1" ry="2.5" fill="#831843" />
-              <path d="M-1,-1 Q-5,-4 -4,0 Q-5,4 -1,1" fill="#f472b6">
-                <animate attributeName="d" values="M-1,-1 Q-5,-4 -4,0 Q-5,4 -1,1;M-1,-1 Q-6,-2 -4,0 Q-6,2 -1,1;M-1,-1 Q-5,-4 -4,0 Q-5,4 -1,1" dur="0.2s" repeatCount="indefinite" />
-              </path>
-              <path d="M1,-1 Q5,-4 4,0 Q5,4 1,1" fill="#f472b6">
-                <animate attributeName="d" values="M1,-1 Q5,-4 4,0 Q5,4 1,1;M1,-1 Q6,-2 4,0 Q6,2 1,1;M1,-1 Q5,-4 4,0 Q5,4 1,1" dur="0.2s" repeatCount="indefinite" />
-              </path>
-            </g>
-          </g>
-          {/* 小蝴蝶2 */}
-          <g>
-            <animateMotion path="M0,0 Q-10,-5 -20,0 Q-10,5 0,0" dur="3.5s" repeatCount="indefinite" />
-            <g transform="translate(70, 45)">
-              <ellipse cx="0" cy="0" rx="0.8" ry="2" fill="#7c3aed" />
-              <path d="M-1,-0.5 Q-4,-3 -3,0 Q-4,3 -1,0.5" fill="#c084fc">
-                <animate attributeName="d" values="M-1,-0.5 Q-4,-3 -3,0 Q-4,3 -1,0.5;M-1,-0.5 Q-5,-1 -3,0 Q-5,1 -1,0.5;M-1,-0.5 Q-4,-3 -3,0 Q-4,3 -1,0.5" dur="0.15s" repeatCount="indefinite" />
-              </path>
-              <path d="M1,-0.5 Q4,-3 3,0 Q4,3 1,0.5" fill="#c084fc">
-                <animate attributeName="d" values="M1,-0.5 Q4,-3 3,0 Q4,3 1,0.5;M1,-0.5 Q5,-1 3,0 Q5,1 1,0.5;M1,-0.5 Q4,-3 3,0 Q4,3 1,0.5" dur="0.15s" repeatCount="indefinite" />
-              </path>
-            </g>
-          </g>
-          {/* 小花 */}
-          {[{x: 8, y: 72, color: "#fda4af"}, {x: 72, y: 70, color: "#fdba74"}, {x: 40, y: 75, color: "#c4b5fd"}].map((flower, i) => (
-            <g key={i} transform={`translate(${flower.x}, ${flower.y})`}>
-              {[0, 72, 144, 216, 288].map((angle, j) => (
-                <ellipse key={j} cx={3 * Math.cos((angle * Math.PI) / 180)} cy={3 * Math.sin((angle * Math.PI) / 180)} rx="2.5" ry="1.5" fill={flower.color} transform={`rotate(${angle})`}>
-                  <animate attributeName="rx" values="2.5;3;2.5" dur={`${1.5 + i * 0.2}s`} repeatCount="indefinite" />
-                </ellipse>
-              ))}
-              <circle cx="0" cy="0" r="2" fill="#fbbf24" />
-            </g>
-          ))}
-          {/* 香茅 */}
-          <g transform="translate(50, 68)">
-            <path d="M 0 0 Q 3 -12 0 -22 Q -3 -12 0 0" fill="#22c55e">
-              <animate attributeName="d" values="M 0 0 Q 3 -12 0 -22 Q -3 -12 0 0;M 0 0 Q 4 -12 0 -23 Q -4 -12 0 0;M 0 0 Q 3 -12 0 -22 Q -3 -12 0 0" dur="2s" repeatCount="indefinite" />
+
+          {/* 土壤/基部 */}
+          <ellipse cx="40" cy="74" rx="22" ry="5" fill="#a3e635" opacity="0.4" />
+
+          {/* 香茅丛 - 多片真实感叶片从中心向外生长 */}
+          <g transform="translate(40, 72)">
+            {/* 叶片1 - 左后 */}
+            <path d="M -2 0 Q -18 -20 -22 -42 Q -19 -43 -17 -42 Q -12 -22 -1 -3 Z" fill="url(#leafGrad2)" opacity="0.85">
+              <animate attributeName="d"
+                values="M -2 0 Q -18 -20 -22 -42 Q -19 -43 -17 -42 Q -12 -22 -1 -3 Z;M -2 0 Q -20 -20 -24 -43 Q -21 -44 -19 -43 Q -14 -22 -1 -3 Z;M -2 0 Q -18 -20 -22 -42 Q -19 -43 -17 -42 Q -12 -22 -1 -3 Z"
+                dur="4s" repeatCount="indefinite" />
             </path>
-            <path d="M -2 2 Q -8 -6 -12 -16" stroke="#4ade80" strokeWidth="2.5" fill="none" />
-            <path d="M 2 2 Q 8 -6 12 -16" stroke="#4ade80" strokeWidth="2.5" fill="none" />
+
+            {/* 叶片2 - 右后 */}
+            <path d="M 2 0 Q 16 -18 20 -40 Q 17 -41 15 -40 Q 11 -20 1 -3 Z" fill="url(#leafGrad3)" opacity="0.85">
+              <animate attributeName="d"
+                values="M 2 0 Q 16 -18 20 -40 Q 17 -41 15 -40 Q 11 -20 1 -3 Z;M 2 0 Q 18 -18 22 -41 Q 19 -42 17 -41 Q 13 -20 1 -3 Z;M 2 0 Q 16 -18 20 -40 Q 17 -41 15 -40 Q 11 -20 1 -3 Z"
+                dur="3.5s" repeatCount="indefinite" />
+            </path>
+
+            {/* 叶片3 - 左中 */}
+            <path d="M -1 0 Q -12 -15 -15 -35 Q -12 -36 -10 -35 Q -7 -17 0 -2 Z" fill="url(#leafGrad1)">
+              <animate attributeName="d"
+                values="M -1 0 Q -12 -15 -15 -35 Q -12 -36 -10 -35 Q -7 -17 0 -2 Z;M -1 0 Q -14 -15 -17 -36 Q -14 -37 -12 -36 Q -9 -17 0 -2 Z;M -1 0 Q -12 -15 -15 -35 Q -12 -36 -10 -35 Q -7 -17 0 -2 Z"
+                dur="3.8s" repeatCount="indefinite" />
+            </path>
+
+            {/* 叶片4 - 中心主叶 */}
+            <path d="M -1.5 0 Q 2 -22 0 -48 Q -2 -48 -3 -47 Q -4 -22 -0.5 -2 Z" fill="url(#leafGrad1)">
+              <animate attributeName="d"
+                values="M -1.5 0 Q 2 -22 0 -48 Q -2 -48 -3 -47 Q -4 -22 -0.5 -2 Z;M -1.5 0 Q 3 -22 1 -49 Q -1 -49 -2 -48 Q -3 -22 -0.5 -2 Z;M -1.5 0 Q 2 -22 0 -48 Q -2 -48 -3 -47 Q -4 -22 -0.5 -2 Z"
+                dur="4.2s" repeatCount="indefinite" />
+            </path>
+            {/* 中心叶脉 */}
+            <path d="M -1 -2 Q 0 -25 -1 -45" stroke="#15803d" strokeWidth="0.6" fill="none" opacity="0.5" />
+
+            {/* 叶片5 - 右中 */}
+            <path d="M 1 0 Q 10 -14 12 -32 Q 9 -33 7 -32 Q 5 -16 0 -2 Z" fill="url(#leafGrad2)">
+              <animate attributeName="d"
+                values="M 1 0 Q 10 -14 12 -32 Q 9 -33 7 -32 Q 5 -16 0 -2 Z;M 1 0 Q 12 -14 14 -33 Q 11 -34 9 -33 Q 7 -16 0 -2 Z;M 1 0 Q 10 -14 12 -32 Q 9 -33 7 -32 Q 5 -16 0 -2 Z"
+                dur="3.2s" repeatCount="indefinite" />
+            </path>
+
+            {/* 叶片6 - 左前小叶 */}
+            <path d="M -1 0 Q -8 -10 -10 -25 Q -8 -26 -6 -25 Q -4 -12 0 -1 Z" fill="url(#leafGrad3)">
+              <animate attributeName="d"
+                values="M -1 0 Q -8 -10 -10 -25 Q -8 -26 -6 -25 Q -4 -12 0 -1 Z;M -1 0 Q -9 -10 -11 -26 Q -9 -27 -7 -26 Q -5 -12 0 -1 Z;M -1 0 Q -8 -10 -10 -25 Q -8 -26 -6 -25 Q -4 -12 0 -1 Z"
+                dur="2.8s" repeatCount="indefinite" />
+            </path>
+
+            {/* 叶片7 - 右前小叶 */}
+            <path d="M 1 0 Q 6 -8 7 -22 Q 5 -23 3 -22 Q 2 -10 0 -1 Z" fill="url(#leafGrad1)">
+              <animate attributeName="d"
+                values="M 1 0 Q 6 -8 7 -22 Q 5 -23 3 -22 Q 2 -10 0 -1 Z;M 1 0 Q 7 -8 8 -23 Q 6 -24 4 -23 Q 3 -10 0 -1 Z;M 1 0 Q 6 -8 7 -22 Q 5 -23 3 -22 Q 2 -10 0 -1 Z"
+                dur="3s" repeatCount="indefinite" />
+            </path>
+
+            {/* 基部白色包裹 */}
+            <ellipse cx="0" cy="-1" rx="4" ry="3" fill="#fef9c3" opacity="0.6" />
           </g>
-          {/* 笑脸 */}
-          <circle cx="50" cy="52" r="5" fill="#fef9c3" />
-          <circle cx="48" cy="51" r="0.8" fill="#422006" />
-          <circle cx="52" cy="51" r="0.8" fill="#422006" />
-          <path d="M 48 54 Q 50 56 52 54" stroke="#422006" strokeWidth="0.8" fill="none" />
+
+          {/* 露珠在叶片上 */}
+          <circle cx="32" cy="42" r="1.5" fill="#bfdbfe" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="48" cy="38" r="1" fill="#bfdbfe" opacity="0.7">
+            <animate attributeName="opacity" values="0.7;0.3;0.7" dur="2.5s" repeatCount="indefinite" />
+          </circle>
+
+          {/* 小蝴蝶 */}
+          <g>
+            <animateMotion path="M0,0 Q12,-6 24,0 Q12,6 0,0" dur="5s" repeatCount="indefinite" />
+            <g transform="translate(60, 40)">
+              <ellipse cx="0" cy="0" rx="0.8" ry="2" fill="#831843" />
+              <path d="M-0.8,-0.8 Q-4,-3 -3,0 Q-4,3 -0.8,0.8" fill="#f472b6">
+                <animate attributeName="d" values="M-0.8,-0.8 Q-4,-3 -3,0 Q-4,3 -0.8,0.8;M-0.8,-0.8 Q-5,-1 -3,0 Q-5,1 -0.8,0.8;M-0.8,-0.8 Q-4,-3 -3,0 Q-4,3 -0.8,0.8" dur="0.15s" repeatCount="indefinite" />
+              </path>
+              <path d="M0.8,-0.8 Q4,-3 3,0 Q4,3 0.8,0.8" fill="#f472b6">
+                <animate attributeName="d" values="M0.8,-0.8 Q4,-3 3,0 Q4,3 0.8,0.8;M0.8,-0.8 Q5,-1 3,0 Q5,1 0.8,0.8;M0.8,-0.8 Q4,-3 3,0 Q4,3 0.8,0.8" dur="0.15s" repeatCount="indefinite" />
+              </path>
+            </g>
+          </g>
+
+          {/* 香气粒子 */}
+          {[{x: 35, delay: 0}, {x: 40, delay: 0.5}, {x: 45, delay: 1}].map((p, i) => (
+            <circle key={i} cx={p.x} cy="30" r="1" fill="#86efac" opacity="0.6">
+              <animate attributeName="cy" values="30;18;8" dur="3s" begin={`${p.delay}s`} repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.6;0.3;0" dur="3s" begin={`${p.delay}s`} repeatCount="indefinite" />
+              <animate attributeName="r" values="1;1.5;0.5" dur="3s" begin={`${p.delay}s`} repeatCount="indefinite" />
+            </circle>
+          ))}
         </svg>
       ),
       bgColor: "from-amber-100 to-sky-100",
@@ -121,58 +194,133 @@ function KnowledgeCard({
     {
       icon: (
         <svg viewBox="0 0 80 80" className="w-full h-full">
-          {/* 发现星星 */}
-          {[{x: 8, y: 12, delay: 0}, {x: 52, y: 8, delay: 0.5}, {x: 75, y: 40, delay: 1}].map((star, i) => (
-            <polygon key={i} points={`${star.x},${star.y - 4} ${star.x + 1.5},${star.y - 1} ${star.x + 4},${star.y - 1} ${star.x + 2},${star.y + 1} ${star.x + 3},${star.y + 4} ${star.x},${star.y + 2} ${star.x - 3},${star.y + 4} ${star.x - 2},${star.y + 1} ${star.x - 4},${star.y - 1} ${star.x - 1.5},${star.y - 1}`} fill="#fbbf24">
-              <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" begin={`${star.delay}s`} repeatCount="indefinite" />
-              <animateTransform attributeName="transform" type="scale" values="0.8;1.2;0.8" dur="1.5s" begin={`${star.delay}s`} repeatCount="indefinite" additive="sum" />
+          <defs>
+            {/* 香茅扁叶渐变 */}
+            <linearGradient id="flatLeafGrad1" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#fef9c3" />
+              <stop offset="20%" stopColor="#d9f99d" />
+              <stop offset="60%" stopColor="#86efac" />
+              <stop offset="100%" stopColor="#22c55e" />
+            </linearGradient>
+            <linearGradient id="flatLeafGrad2" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#ecfccb" />
+              <stop offset="30%" stopColor="#86efac" />
+              <stop offset="100%" stopColor="#16a34a" />
+            </linearGradient>
+            {/* 葱的渐变 - 圆管状 */}
+            <linearGradient id="scallionGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#f0fdf4" />
+              <stop offset="40%" stopColor="#86efac" />
+              <stop offset="100%" stopColor="#22c55e" />
+            </linearGradient>
+          </defs>
+
+          {/* ===== 左侧：葱（错误示例）===== */}
+          <g transform="translate(20, 46)">
+            {/* 葱的圆管状叶子 - 3根 */}
+            {/* 葱1 - 左 */}
+            <ellipse cx="-6" cy="-22" rx="3" ry="1.5" fill="#4ade80" opacity="0.7" />
+            <path d="M -9 0 L -9 -22 A 3 1.5 0 0 1 -3 -22 L -3 0 Z" fill="url(#scallionGrad)" stroke="#22c55e" strokeWidth="0.5">
+              <animate attributeName="d"
+                values="M -9 0 L -9 -22 A 3 1.5 0 0 1 -3 -22 L -3 0 Z;M -9 0 L -9.5 -23 A 3 1.5 0 0 1 -2.5 -23 L -3 0 Z;M -9 0 L -9 -22 A 3 1.5 0 0 1 -3 -22 L -3 0 Z"
+                dur="3s" repeatCount="indefinite" />
+            </path>
+            {/* 圆管中空效果 - 明显的黑洞 */}
+            <ellipse cx="-6" cy="-22" rx="2" ry="1" fill="#166534" opacity="0.6" />
+
+            {/* 葱2 - 中（最高） */}
+            <ellipse cx="0" cy="-28" rx="3.5" ry="1.8" fill="#4ade80" opacity="0.7" />
+            <path d="M -3.5 0 L -3.5 -28 A 3.5 1.8 0 0 1 3.5 -28 L 3.5 0 Z" fill="url(#scallionGrad)" stroke="#22c55e" strokeWidth="0.5">
+              <animate attributeName="d"
+                values="M -3.5 0 L -3.5 -28 A 3.5 1.8 0 0 1 3.5 -28 L 3.5 0 Z;M -3.5 0 L -3 -29 A 3.5 1.8 0 0 1 4 -29 L 3.5 0 Z;M -3.5 0 L -3.5 -28 A 3.5 1.8 0 0 1 3.5 -28 L 3.5 0 Z"
+                dur="3.5s" repeatCount="indefinite" />
+            </path>
+            <ellipse cx="0" cy="-28" rx="2.3" ry="1.2" fill="#166534" opacity="0.6" />
+
+            {/* 葱3 - 右 */}
+            <ellipse cx="6" cy="-20" rx="2.8" ry="1.4" fill="#4ade80" opacity="0.7" />
+            <path d="M 3.2 0 L 3.2 -20 A 2.8 1.4 0 0 1 8.8 -20 L 8.8 0 Z" fill="url(#scallionGrad)" stroke="#22c55e" strokeWidth="0.5">
+              <animate attributeName="d"
+                values="M 3.2 0 L 3.2 -20 A 2.8 1.4 0 0 1 8.8 -20 L 8.8 0 Z;M 3.2 0 L 3.7 -21 A 2.8 1.4 0 0 1 9.3 -21 L 8.8 0 Z;M 3.2 0 L 3.2 -20 A 2.8 1.4 0 0 1 8.8 -20 L 8.8 0 Z"
+                dur="2.8s" repeatCount="indefinite" />
+            </path>
+            <ellipse cx="6" cy="-20" rx="1.8" ry="0.9" fill="#166534" opacity="0.6" />
+
+            {/* 基部 */}
+            <ellipse cx="0" cy="2" rx="12" ry="4" fill="#fef9c3" opacity="0.8" />
+          </g>
+
+          {/* 错误标记 - 大红叉 */}
+          <g transform="translate(20, 72)">
+            <circle cx="0" cy="0" r="6" fill="#fee2e2" stroke="#ef4444" strokeWidth="2">
+              <animate attributeName="r" values="6;6.5;6" dur="1s" repeatCount="indefinite" />
+            </circle>
+            <line x1="-3" y1="-3" x2="3" y2="3" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1="3" y1="-3" x2="-3" y2="3" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" />
+          </g>
+
+          {/* 中间分隔线 */}
+          <line x1="40" y1="8" x2="40" y2="78" stroke="#e5e7eb" strokeWidth="1.5" strokeDasharray="3,3" />
+
+          {/* ===== 右侧：香茅（正确示例）===== */}
+          <g transform="translate(60, 46)">
+            {/* 香茅扁平叶片 - 多片从中心向外 */}
+            {/* 叶片1 - 左后 */}
+            <path d="M -2 0 Q -14 -14 -16 -32 L -12 -33 Q -10 -15 -1 -2 Z" fill="url(#flatLeafGrad2)" opacity="0.8">
+              <animate attributeName="d"
+                values="M -2 0 Q -14 -14 -16 -32 L -12 -33 Q -10 -15 -1 -2 Z;M -2 0 Q -15 -14 -17 -33 L -13 -34 Q -11 -15 -1 -2 Z;M -2 0 Q -14 -14 -16 -32 L -12 -33 Q -10 -15 -1 -2 Z"
+                dur="3.5s" repeatCount="indefinite" />
+            </path>
+            <path d="M -1.5 -2 L -14 -31" stroke="#15803d" strokeWidth="0.5" opacity="0.5" />
+
+            {/* 叶片2 - 右后 */}
+            <path d="M 2 0 Q 12 -12 14 -30 L 10 -31 Q 8 -13 1 -2 Z" fill="url(#flatLeafGrad1)" opacity="0.8">
+              <animate attributeName="d"
+                values="M 2 0 Q 12 -12 14 -30 L 10 -31 Q 8 -13 1 -2 Z;M 2 0 Q 13 -12 15 -31 L 11 -32 Q 9 -13 1 -2 Z;M 2 0 Q 12 -12 14 -30 L 10 -31 Q 8 -13 1 -2 Z"
+                dur="3s" repeatCount="indefinite" />
+            </path>
+            <path d="M 1.5 -2 L 12 -29" stroke="#15803d" strokeWidth="0.5" opacity="0.5" />
+
+            {/* 叶片3 - 中心主叶（最高） */}
+            <path d="M -1.5 0 Q 1 -18 0 -38 L -4 -39 Q -5 -19 -0.5 -2 Z" fill="url(#flatLeafGrad1)">
+              <animate attributeName="d"
+                values="M -1.5 0 Q 1 -18 0 -38 L -4 -39 Q -5 -19 -0.5 -2 Z;M -1.5 0 Q 2 -18 1 -39 L -3 -40 Q -4 -19 -0.5 -2 Z;M -1.5 0 Q 1 -18 0 -38 L -4 -39 Q -5 -19 -0.5 -2 Z"
+                dur="4s" repeatCount="indefinite" />
+            </path>
+            <path d="M -1 -2 L -2 -36" stroke="#15803d" strokeWidth="0.6" opacity="0.6" />
+
+            {/* 叶片4 - 左前 */}
+            <path d="M -1 0 Q -10 -10 -11 -24 L -7 -25 Q -6 -11 0 -1 Z" fill="url(#flatLeafGrad1)" opacity="0.9">
+              <animate attributeName="d"
+                values="M -1 0 Q -10 -10 -11 -24 L -7 -25 Q -6 -11 0 -1 Z;M -1 0 Q -11 -10 -12 -25 L -8 -26 Q -7 -11 0 -1 Z;M -1 0 Q -10 -10 -11 -24 L -7 -25 Q -6 -11 0 -1 Z"
+                dur="2.8s" repeatCount="indefinite" />
+            </path>
+
+            {/* 叶片5 - 右前 */}
+            <path d="M 1 0 Q 8 -8 9 -22 L 5 -23 Q 4 -9 0 -1 Z" fill="url(#flatLeafGrad2)" opacity="0.9">
+              <animate attributeName="d"
+                values="M 1 0 Q 8 -8 9 -22 L 5 -23 Q 4 -9 0 -1 Z;M 1 0 Q 9 -8 10 -23 L 6 -24 Q 5 -9 0 -1 Z;M 1 0 Q 8 -8 9 -22 L 5 -23 Q 4 -9 0 -1 Z"
+                dur="3.2s" repeatCount="indefinite" />
+            </path>
+
+            {/* 基部白色包裹 */}
+            <ellipse cx="0" cy="2" rx="6" ry="4" fill="#fef9c3" opacity="0.8" />
+          </g>
+
+          {/* 正确标记 - 大绿勾 */}
+          <g transform="translate(60, 72)">
+            <circle cx="0" cy="0" r="6" fill="#dcfce7" stroke="#22c55e" strokeWidth="2">
+              <animate attributeName="r" values="6;6.5;6" dur="1s" repeatCount="indefinite" />
+            </circle>
+            <path d="M -3 0 L -1 3 L 4 -3" stroke="#22c55e" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          </g>
+
+          {/* 闪烁星星装饰 */}
+          {[{x: 75, y: 15}, {x: 5, y: 20}].map((star, i) => (
+            <polygon key={i} points={`${star.x},${star.y - 3} ${star.x + 1},${star.y - 1} ${star.x + 3},${star.y} ${star.x + 1},${star.y + 1} ${star.x},${star.y + 3} ${star.x - 1},${star.y + 1} ${star.x - 3},${star.y} ${star.x - 1},${star.y - 1}`} fill="#fbbf24">
+              <animate attributeName="opacity" values="0.5;1;0.5" dur="1.5s" begin={`${i * 0.5}s`} repeatCount="indefinite" />
             </polygon>
           ))}
-          {/* 放大镜 - 带镜片反光 */}
-          <circle cx="30" cy="32" r="18" fill="#e0f2fe" stroke="#94a3b8" strokeWidth="4" />
-          <ellipse cx="22" cy="26" rx="4" ry="8" fill="white" opacity="0.4" transform="rotate(-30 22 26)" />
-          <line x1="43" y1="45" x2="55" y2="57" stroke="#94a3b8" strokeWidth="5" strokeLinecap="round" />
-          {/* 放大镜内的扁叶 - 带叶脉 */}
-          <g>
-            <path d="M 30 42 Q 36 32 30 18 Q 24 32 30 42" fill="#22c55e" stroke="#15803d" strokeWidth="1">
-              <animate attributeName="d"
-                values="M 30 42 Q 36 32 30 18 Q 24 32 30 42;M 30 44 Q 37 33 30 17 Q 23 33 30 44;M 30 42 Q 36 32 30 18 Q 24 32 30 42"
-                dur="2s" repeatCount="indefinite" />
-            </path>
-            {/* 叶脉 */}
-            <path d="M 30 40 L 30 20" stroke="#15803d" strokeWidth="0.8" opacity="0.6" />
-            <path d="M 30 32 L 26 29" stroke="#15803d" strokeWidth="0.5" opacity="0.4" />
-            <path d="M 30 32 L 34 29" stroke="#15803d" strokeWidth="0.5" opacity="0.4" />
-            <path d="M 30 26 L 27 24" stroke="#15803d" strokeWidth="0.5" opacity="0.4" />
-            <path d="M 30 26 L 33 24" stroke="#15803d" strokeWidth="0.5" opacity="0.4" />
-          </g>
-          {/* 瓢虫 */}
-          <g>
-            <animateMotion path="M0,0 L3,-6 L6,-3" dur="4s" repeatCount="indefinite" />
-            <g transform="translate(38, 30)">
-              <ellipse cx="0" cy="0" rx="4" ry="3" fill="#ef4444" />
-              <line x1="0" y1="-3" x2="0" y2="3" stroke="#1f2937" strokeWidth="1" />
-              <circle cx="-1.5" cy="-1" r="0.8" fill="#1f2937" />
-              <circle cx="1.5" cy="0.5" r="0.6" fill="#1f2937" />
-              <circle cx="0" cy="-3.5" r="1.5" fill="#1f2937" />
-              <line x1="-1" y1="-4.5" x2="-2" y2="-6" stroke="#1f2937" strokeWidth="0.5" />
-              <line x1="1" y1="-4.5" x2="2" y2="-6" stroke="#1f2937" strokeWidth="0.5" />
-            </g>
-          </g>
-          {/* 对比：圆管（打叉） */}
-          <g transform="translate(62, 68)">
-            <ellipse cx="0" cy="0" rx="4" ry="8" fill="#94a3b8" />
-            <ellipse cx="0" cy="-3" rx="3" ry="3" fill="#64748b" opacity="0.5" />
-            <line x1="-6" y1="-6" x2="6" y2="6" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" />
-            <line x1="6" y1="-6" x2="-6" y2="6" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" />
-          </g>
-          {/* 扁叶（打勾） */}
-          <g transform="translate(62, 22)">
-            <path d="M 0 8 Q 4 0 0 -8 Q -4 0 0 8" fill="#4ade80" />
-            <path d="M 0 6 L 0 -6" stroke="#15803d" strokeWidth="0.5" opacity="0.5" />
-            <circle cx="0" cy="12" r="6" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" />
-            <path d="M -3 12 L -1 14 L 4 9" stroke="#22c55e" strokeWidth="2" fill="none" strokeLinecap="round" />
-          </g>
         </svg>
       ),
       bgColor: "from-green-100 to-emerald-100",
@@ -182,66 +330,206 @@ function KnowledgeCard({
     {
       icon: (
         <svg viewBox="0 0 80 80" className="w-full h-full">
-          {/* 柠檬片装饰 */}
-          <g transform="translate(70, 42)">
-            <circle cx="0" cy="0" r="7" fill="#fef08a" stroke="#facc15" strokeWidth="1" />
-            {[0, 60, 120, 180, 240, 300].map((angle, i) => (
-              <line key={i} x1="0" y1="0" x2={5 * Math.cos((angle * Math.PI) / 180)} y2={5 * Math.sin((angle * Math.PI) / 180)} stroke="#fbbf24" strokeWidth="1.5" />
+          <defs>
+            {/* 碗的渐变 - 陶瓷质感 */}
+            <linearGradient id="bowlOuter" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#fef3c7" />
+              <stop offset="50%" stopColor="#fde68a" />
+              <stop offset="100%" stopColor="#fcd34d" />
+            </linearGradient>
+            <linearGradient id="bowlInner" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#dc2626" />
+              <stop offset="50%" stopColor="#f97316" />
+              <stop offset="100%" stopColor="#fb923c" />
+            </linearGradient>
+            {/* 汤面渐变 */}
+            <radialGradient id="soupSurface" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#fed7aa" />
+              <stop offset="60%" stopColor="#fb923c" />
+              <stop offset="100%" stopColor="#f97316" />
+            </radialGradient>
+            {/* 香茅叶片渐变 - 真实扁叶 */}
+            <linearGradient id="lemongrassLeaf1" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#ecfccb" />
+              <stop offset="30%" stopColor="#a3e635" />
+              <stop offset="100%" stopColor="#65a30d" />
+            </linearGradient>
+            <linearGradient id="lemongrassLeaf2" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#fef9c3" />
+              <stop offset="25%" stopColor="#bef264" />
+              <stop offset="100%" stopColor="#84cc16" />
+            </linearGradient>
+            {/* 虾的渐变 */}
+            <linearGradient id="shrimpGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#fda4af" />
+              <stop offset="50%" stopColor="#fb7185" />
+              <stop offset="100%" stopColor="#f43f5e" />
+            </linearGradient>
+            {/* 蘑菇渐变 */}
+            <linearGradient id="mushroomCap" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#e7e5e4" />
+              <stop offset="100%" stopColor="#d6d3d1" />
+            </linearGradient>
+            {/* 蒸汽渐变 */}
+            <linearGradient id="steamGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="white" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="white" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+
+          {/* 背景装饰 - 柠檬片 */}
+          <g transform="translate(70, 38)">
+            <circle cx="0" cy="0" r="8" fill="#fef08a" opacity="0.3">
+              <animate attributeName="r" values="8;8.5;8" dur="2s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="0" cy="0" r="7.5" fill="#fef08a" stroke="#facc15" strokeWidth="1.2" />
+            {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+              <line key={i} x1="0" y1="0" x2={5.5 * Math.cos((angle * Math.PI) / 180)} y2={5.5 * Math.sin((angle * Math.PI) / 180)} stroke="#fde047" strokeWidth="1.5" opacity="0.7" />
             ))}
-            <circle cx="0" cy="0" r="2" fill="#fef9c3" />
+            <circle cx="0" cy="0" r="2.5" fill="#fef9c3" />
           </g>
-          {/* 小辣椒 */}
-          <g transform="translate(8, 48)">
-            <path d="M0,0 Q4,-10 0,-15" fill="#ef4444" />
-            <path d="M0,0 L0,3" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" />
-            <animate attributeName="transform" type="rotate" values="0 8 48;5 8 48;0 8 48" dur="2s" repeatCount="indefinite" />
-          </g>
-          {/* 碗 - 更精美 */}
-          <ellipse cx="40" cy="52" rx="28" ry="9" fill="#fef9c3" />
-          <path d="M 12 52 Q 12 72 40 72 Q 68 72 68 52" fill="#fbbf24" />
-          <ellipse cx="40" cy="52" rx="25" ry="7" fill="#f97316">
-            <animate attributeName="ry" values="7;7.5;7" dur="2s" repeatCount="indefinite" />
-          </ellipse>
-          {/* 汤里的香茅 */}
-          <rect x="23" y="44" width="3" height="14" fill="#86efac" rx="1" transform="rotate(-15, 24, 52)">
-            <animate attributeName="transform" values="rotate(-15, 24, 52);rotate(-12, 24, 52);rotate(-15, 24, 52)" dur="2.5s" repeatCount="indefinite" />
-          </rect>
-          <rect x="52" y="42" width="3" height="14" fill="#86efac" rx="1" transform="rotate(12, 53, 50)">
-            <animate attributeName="transform" values="rotate(12, 53, 50);rotate(15, 53, 50);rotate(12, 53, 50)" dur="2.5s" repeatCount="indefinite" />
-          </rect>
-          {/* 蘑菇 */}
-          <g transform="translate(48, 52)">
-            <ellipse cx="0" cy="-2" rx="4" ry="2" fill="#a3a3a3" />
-            <rect x="-1.5" y="-2" width="3" height="5" fill="#f5f5f5" rx="1" />
-          </g>
-          {/* 虾 - 更精细 */}
-          <g transform="translate(35, 54)">
-            <ellipse cx="0" cy="0" rx="6" ry="3" fill="#fda4af" />
-            <path d="M-5,0 Q-8,-2 -6,-4" stroke="#fda4af" strokeWidth="2" fill="none" />
-            <circle cx="-5" cy="-1" r="0.8" fill="#f472b6" />
-            <animate attributeName="transform" type="translate" values="35,54;35,52;35,54" dur="3s" repeatCount="indefinite" />
-          </g>
-          {/* 丰富的蒸汽 */}
-          {[
-            {x: 22, delay: 0, dur: 1.5},
-            {x: 32, delay: 0.3, dur: 1.8},
-            {x: 42, delay: 0.6, dur: 2},
-            {x: 52, delay: 0.9, dur: 1.6}
-          ].map((steam, i) => (
-            <path key={i} d={`M ${steam.x} 38 Q ${steam.x + 3} 30 ${steam.x} 22`} stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round" opacity="0.7">
-              <animate attributeName="d" values={`M ${steam.x} 38 Q ${steam.x + 3} 30 ${steam.x} 22;M ${steam.x} 38 Q ${steam.x - 3} 30 ${steam.x} 22;M ${steam.x} 38 Q ${steam.x + 3} 30 ${steam.x} 22`} dur={`${steam.dur}s`} begin={`${steam.delay}s`} repeatCount="indefinite" />
-              <animate attributeName="opacity" values="0.7;0.2;0.7" dur={`${steam.dur}s`} begin={`${steam.delay}s`} repeatCount="indefinite" />
+
+          {/* 小辣椒装饰 */}
+          <g transform="translate(10, 50)">
+            <path d="M0,0 Q5,-12 1,-18 Q-3,-12 0,0" fill="#ef4444">
+              <animate attributeName="d" values="M0,0 Q5,-12 1,-18 Q-3,-12 0,0;M0,0 Q6,-12 1,-17 Q-2,-12 0,0;M0,0 Q5,-12 1,-18 Q-3,-12 0,0" dur="2s" repeatCount="indefinite" />
             </path>
+            <ellipse cx="0.5" cy="-12" rx="1.5" ry="3" fill="#dc2626" />
+            <path d="M0,0 Q-2,-2 -1,-4 L0,-3" fill="#22c55e" />
+          </g>
+
+          {/* 碗 - 更有质感 */}
+          {/* 碗外壁 */}
+          <ellipse cx="40" cy="50" rx="30" ry="10" fill="url(#bowlOuter)" opacity="0.5" />
+          <path d="M 10 50 Q 10 72 40 74 Q 70 72 70 50" fill="url(#bowlOuter)" stroke="#f59e0b" strokeWidth="0.8" />
+
+          {/* 碗内部 - 汤液 */}
+          <ellipse cx="40" cy="50" rx="27" ry="8.5" fill="url(#soupSurface)">
+            <animate attributeName="ry" values="8.5;9;8.5" dur="3s" repeatCount="indefinite" />
+          </ellipse>
+
+          {/* 汤液反光 */}
+          <ellipse cx="28" cy="48" rx="8" ry="3" fill="white" opacity="0.3">
+            <animate attributeName="opacity" values="0.3;0.2;0.3" dur="2s" repeatCount="indefinite" />
+          </ellipse>
+
+          {/* 汤里的配料 */}
+
+          {/* 香茅 - 真实扁平叶片，带渐变 */}
+          <g transform="translate(22, 58)">
+            {/* 左侧香茅 */}
+            <path d="M 0 0 Q -2 -8 -1 -16 Q 1 -8 0 0" fill="url(#lemongrassLeaf1)" opacity="0.9" stroke="#84cc16" strokeWidth="0.4">
+              <animate attributeName="d" values="M 0 0 Q -2 -8 -1 -16 Q 1 -8 0 0;M 0 0 Q -2.5 -8 -1.5 -17 Q 1.5 -8 0 0;M 0 0 Q -2 -8 -1 -16 Q 1 -8 0 0" dur="3s" repeatCount="indefinite" />
+            </path>
+            {/* 叶脉 */}
+            <path d="M -0.5 -1 L -0.8 -14" stroke="#65a30d" strokeWidth="0.3" opacity="0.5" />
+          </g>
+
+          <g transform="translate(56, 56)">
+            {/* 右侧香茅 */}
+            <path d="M 0 0 Q 2 -10 1 -18 Q -1 -10 0 0" fill="url(#lemongrassLeaf2)" opacity="0.95" stroke="#84cc16" strokeWidth="0.4">
+              <animate attributeName="d" values="M 0 0 Q 2 -10 1 -18 Q -1 -10 0 0;M 0 0 Q 2.5 -10 1.5 -19 Q -1.5 -10 0 0;M 0 0 Q 2 -10 1 -18 Q -1 -10 0 0" dur="2.8s" repeatCount="indefinite" />
+            </path>
+            {/* 叶脉 */}
+            <path d="M 0.5 -1 L 0.8 -16" stroke="#65a30d" strokeWidth="0.3" opacity="0.5" />
+          </g>
+
+          {/* 第三片香茅 - 中间 */}
+          <g transform="translate(40, 57)">
+            <path d="M 0 0 Q 1.5 -6 0.5 -12 Q -0.5 -6 0 0" fill="url(#lemongrassLeaf1)" opacity="0.85" stroke="#84cc16" strokeWidth="0.3">
+              <animate attributeName="d" values="M 0 0 Q 1.5 -6 0.5 -12 Q -0.5 -6 0 0;M 0 0 Q 2 -6 1 -13 Q -1 -6 0 0;M 0 0 Q 1.5 -6 0.5 -12 Q -0.5 -6 0 0" dur="3.2s" repeatCount="indefinite" />
+            </path>
+            <path d="M 0.2 -1 L 0.3 -10" stroke="#65a30d" strokeWidth="0.2" opacity="0.5" />
+          </g>
+
+          {/* 虾 - 更精致 */}
+          <g transform="translate(32, 52)">
+            {/* 虾身 */}
+            <ellipse cx="0" cy="0" rx="7" ry="3.5" fill="url(#shrimpGrad)" stroke="#f43f5e" strokeWidth="0.5">
+              <animate attributeName="transform" type="translate" values="0,0;0,-0.5;0,0" dur="3s" repeatCount="indefinite" />
+            </ellipse>
+            {/* 虾节 */}
+            <path d="M -2 -1 Q -2 1 -2 2" stroke="#fb7185" strokeWidth="0.8" opacity="0.6" />
+            <path d="M 0 -1 Q 0 1 0 2" stroke="#fb7185" strokeWidth="0.8" opacity="0.6" />
+            <path d="M 2 -1 Q 2 1 2 2" stroke="#fb7185" strokeWidth="0.8" opacity="0.6" />
+            {/* 虾头 */}
+            <circle cx="-6" cy="-0.5" r="2" fill="#f87171" />
+            {/* 虾须 */}
+            <path d="M -7 -2 Q -9 -4 -8 -6" stroke="#fb7185" strokeWidth="0.6" fill="none" strokeLinecap="round" />
+            <path d="M -7 -1 Q -10 -2 -10 -4" stroke="#fb7185" strokeWidth="0.6" fill="none" strokeLinecap="round" />
+            {/* 眼睛 */}
+            <circle cx="-6.5" cy="-1" r="0.6" fill="#1f2937" />
+            {/* 虾尾 */}
+            <path d="M 6 0 Q 9 -1 11 0 Q 9 1 6 0" fill="#fda4af" opacity="0.8" />
+          </g>
+
+          {/* 蘑菇 - 更精致 */}
+          <g transform="translate(48, 50)">
+            <ellipse cx="0" cy="-2.5" rx="5" ry="2.5" fill="url(#mushroomCap)" stroke="#a8a29e" strokeWidth="0.5" />
+            <rect x="-2" y="-2.5" width="4" height="6" fill="#fafaf9" rx="1.5" stroke="#e7e5e4" strokeWidth="0.3" />
+            {/* 蘑菇褶皱 */}
+            <path d="M -3 -2 Q -3 -1 -3 0" stroke="#d6d3d1" strokeWidth="0.4" opacity="0.5" />
+            <path d="M 0 -2 Q 0 -1 0 0" stroke="#d6d3d1" strokeWidth="0.4" opacity="0.5" />
+            <path d="M 3 -2 Q 3 -1 3 0" stroke="#d6d3d1" strokeWidth="0.4" opacity="0.5" />
+          </g>
+
+          {/* 小番茄片 */}
+          <g transform="translate(28, 52)">
+            <circle cx="0" cy="0" r="2.5" fill="#f87171" stroke="#dc2626" strokeWidth="0.4" />
+            <ellipse cx="0" cy="0" rx="1.2" ry="1.8" fill="#fca5a5" opacity="0.5" />
+          </g>
+
+          {/* 柠檬片在汤里 */}
+          <g transform="translate(52, 52)">
+            <circle cx="0" cy="0" r="3" fill="#fef08a" stroke="#facc15" strokeWidth="0.5" opacity="0.8" />
+            {[0, 60, 120, 180, 240, 300].map((angle, i) => (
+              <line key={i} x1="0" y1="0" x2={2 * Math.cos((angle * Math.PI) / 180)} y2={2 * Math.sin((angle * Math.PI) / 180)} stroke="#fde047" strokeWidth="0.8" opacity="0.6" />
+            ))}
+          </g>
+
+          {/* 蒸汽效果 - 更自然流畅 */}
+          {[
+            {x: 20, delay: 0, dur: 2.5, offset: 4},
+            {x: 30, delay: 0.4, dur: 2.8, offset: -3},
+            {x: 40, delay: 0.8, dur: 2.2, offset: 2},
+            {x: 50, delay: 1.2, dur: 2.6, offset: -4},
+            {x: 60, delay: 0.3, dur: 2.4, offset: 3}
+          ].map((steam, i) => (
+            <g key={i}>
+              <path d={`M ${steam.x} 42 Q ${steam.x + steam.offset} 32 ${steam.x} 20 Q ${steam.x - steam.offset} 12 ${steam.x + steam.offset * 0.5} 4`} stroke="url(#steamGrad)" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.7">
+                <animate attributeName="d" values={`M ${steam.x} 42 Q ${steam.x + steam.offset} 32 ${steam.x} 20 Q ${steam.x - steam.offset} 12 ${steam.x + steam.offset * 0.5} 4;M ${steam.x} 42 Q ${steam.x - steam.offset} 32 ${steam.x} 20 Q ${steam.x + steam.offset} 12 ${steam.x - steam.offset * 0.5} 4;M ${steam.x} 42 Q ${steam.x + steam.offset} 32 ${steam.x} 20 Q ${steam.x - steam.offset} 12 ${steam.x + steam.offset * 0.5} 4`} dur={`${steam.dur}s`} begin={`${steam.delay}s`} repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0;0.7;0" dur={`${steam.dur}s`} begin={`${steam.delay}s`} repeatCount="indefinite" />
+              </path>
+            </g>
           ))}
-          {/* 香气小圈圈 */}
-          {[{x: 28, y: 18}, {x: 50, y: 15}].map((pos, i) => (
-            <circle key={i} cx={pos.x} cy={pos.y} r="3" fill="none" stroke="#fdba74" strokeWidth="1" opacity="0.5">
-              <animate attributeName="r" values="2;5;2" dur={`${1.5 + i * 0.3}s`} repeatCount="indefinite" />
-              <animate attributeName="opacity" values="0.5;0;0.5" dur={`${1.5 + i * 0.3}s`} repeatCount="indefinite" />
+
+          {/* 香气粒子 - 上升动画 */}
+          {[
+            {x: 24, y: 28, delay: 0},
+            {x: 36, y: 24, delay: 0.5},
+            {x: 48, y: 26, delay: 1},
+            {x: 56, y: 22, delay: 1.5}
+          ].map((particle, i) => (
+            <g key={i}>
+              <circle cx={particle.x} cy="42" r="2" fill="#fdba74" opacity="0.6">
+                <animate attributeName="cy" values="42;28;12;0" dur="3s" begin={`${particle.delay}s`} repeatCount="indefinite" />
+                <animate attributeName="r" values="1.5;2.5;1.5;0.5" dur="3s" begin={`${particle.delay}s`} repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0;0.6;0.3;0" dur="3s" begin={`${particle.delay}s`} repeatCount="indefinite" />
+              </circle>
+            </g>
+          ))}
+
+          {/* 香气波纹 */}
+          {[{x: 32, y: 18, delay: 0}, {x: 48, y: 15, delay: 1}].map((ripple, i) => (
+            <circle key={i} cx={ripple.x} cy={ripple.y} r="2" fill="none" stroke="#fed7aa" strokeWidth="1.2" opacity="0.4">
+              <animate attributeName="r" values="1;6;1" dur="2.5s" begin={`${ripple.delay}s`} repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.6;0;0.6" dur="2.5s" begin={`${ripple.delay}s`} repeatCount="indefinite" />
+              <animate attributeName="stroke-width" values="1.2;0.3;1.2" dur="2.5s" begin={`${ripple.delay}s`} repeatCount="indefinite" />
             </circle>
           ))}
-          {/* 好吃表情 */}
-          <text x="40" y="10" textAnchor="middle" fontSize="12">😋</text>
+
+          {/* 美味表情 */}
+          <text x="40" y="10" textAnchor="middle" fontSize="14" opacity="0.9">😋</text>
         </svg>
       ),
       bgColor: "from-orange-100 to-amber-100",
@@ -251,75 +539,275 @@ function KnowledgeCard({
     {
       icon: (
         <svg viewBox="0 0 80 80" className="w-full h-full">
-          {/* 小星星装饰 */}
-          {[{x: 8, y: 8}, {x: 72, y: 12}, {x: 5, y: 70}].map((pos, i) => (
-            <polygon key={i} points={`${pos.x},${pos.y - 3} ${pos.x + 1},${pos.y - 1} ${pos.x + 3},${pos.y - 1} ${pos.x + 1.5},${pos.y + 0.5} ${pos.x + 2},${pos.y + 3} ${pos.x},${pos.y + 1.5} ${pos.x - 2},${pos.y + 3} ${pos.x - 1.5},${pos.y + 0.5} ${pos.x - 3},${pos.y - 1} ${pos.x - 1},${pos.y - 1}`} fill="#fbbf24">
-              <animate attributeName="opacity" values="1;0.4;1" dur={`${1.2 + i * 0.3}s`} repeatCount="indefinite" />
-            </polygon>
-          ))}
-          {/* 魔法光芒 - 旋转 */}
-          <g>
-            <animateTransform attributeName="transform" type="rotate" from="0 40 45" to="360 40 45" dur="10s" repeatCount="indefinite" />
-            {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+          <defs>
+            {/* 精油瓶玻璃渐变 */}
+            <linearGradient id="bottleGlass" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#d1fae5" />
+              <stop offset="50%" stopColor="#86efac" />
+              <stop offset="100%" stopColor="#4ade80" />
+            </linearGradient>
+            {/* 精油液体渐变 */}
+            <linearGradient id="oilLiquid" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#22c55e" />
+              <stop offset="50%" stopColor="#4ade80" />
+              <stop offset="100%" stopColor="#86efac" />
+            </linearGradient>
+            {/* 瓶盖金属渐变 */}
+            <linearGradient id="capMetal" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#fef3c7" />
+              <stop offset="50%" stopColor="#fbbf24" />
+              <stop offset="100%" stopColor="#d97706" />
+            </linearGradient>
+            {/* 香茅叶片渐变1 */}
+            <linearGradient id="leafOil1" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#d9f99d" />
+              <stop offset="50%" stopColor="#86efac" />
+              <stop offset="100%" stopColor="#22c55e" />
+            </linearGradient>
+            {/* 香茅叶片渐变2 */}
+            <linearGradient id="leafOil2" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#fef9c3" />
+              <stop offset="40%" stopColor="#a3e635" />
+              <stop offset="100%" stopColor="#16a34a" />
+            </linearGradient>
+            {/* 魔法光芒渐变 */}
+            <radialGradient id="magicGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#e9d5ff" />
+              <stop offset="50%" stopColor="#c084fc" />
+              <stop offset="100%" stopColor="#9333ea" stopOpacity="0.3" />
+            </radialGradient>
+            {/* 保护盾渐变 */}
+            <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#86efac" />
+              <stop offset="50%" stopColor="#c084fc" />
+              <stop offset="100%" stopColor="#e9d5ff" />
+            </linearGradient>
+          </defs>
+
+          {/* 背景魔法光圈 */}
+          <circle cx="40" cy="45" r="32" fill="url(#magicGlow)" opacity="0.3">
+            <animate attributeName="r" values="32;35;32" dur="3s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.3;0.15;0.3" dur="3s" repeatCount="indefinite" />
+          </circle>
+
+          {/* 旋转的魔法光芒 */}
+          <g opacity="0.7">
+            <animateTransform attributeName="transform" type="rotate" from="0 40 45" to="360 40 45" dur="12s" repeatCount="indefinite" />
+            {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle, i) => (
               <line
                 key={i}
-                x1={40 + 20 * Math.cos((angle * Math.PI) / 180)}
-                y1={45 + 20 * Math.sin((angle * Math.PI) / 180)}
-                x2={40 + 28 * Math.cos((angle * Math.PI) / 180)}
-                y2={45 + 28 * Math.sin((angle * Math.PI) / 180)}
-                stroke="#c084fc"
+                x1={40 + 24 * Math.cos((angle * Math.PI) / 180)}
+                y1={45 + 24 * Math.sin((angle * Math.PI) / 180)}
+                x2={40 + 30 * Math.cos((angle * Math.PI) / 180)}
+                y2={45 + 30 * Math.sin((angle * Math.PI) / 180)}
+                stroke="url(#shieldGrad)"
                 strokeWidth="2"
                 strokeLinecap="round"
-                opacity="0.6"
               >
-                <animate attributeName="opacity" values="0.6;0.2;0.6" dur="1.5s" begin={`${i * 0.15}s`} repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" begin={`${i * 0.1}s`} repeatCount="indefinite" />
               </line>
             ))}
           </g>
-          {/* 魔法粒子上升 */}
-          {[0, 1, 2, 3, 4].map((i) => (
-            <circle key={i} cx={35 + i * 3} cy="55" r="1.5" fill="#a78bfa">
-              <animate attributeName="cy" values="55;35;15" dur={`${2 + i * 0.3}s`} repeatCount="indefinite" />
-              <animate attributeName="opacity" values="1;0.5;0" dur={`${2 + i * 0.3}s`} repeatCount="indefinite" />
-            </circle>
-          ))}
-          {/* 精油瓶 - 增加高光 */}
-          <rect x="30" y="35" width="20" height="28" fill="#86efac" rx="5" />
-          <ellipse cx="34" cy="45" rx="2" ry="6" fill="white" opacity="0.3" />
-          <rect x="35" y="26" width="10" height="11" fill="#d4d4d4" rx="3" />
-          <rect x="37" y="21" width="6" height="6" fill="#a3a3a3" rx="2" />
-          {/* 香茅标签 */}
-          <rect x="33" y="42" width="14" height="16" fill="white" rx="2" />
-          <path d="M 40 53 Q 42 48 40 43 Q 38 48 40 53" fill="#22c55e" />
-          <path d="M 40 52 L 40 44" stroke="#15803d" strokeWidth="0.5" opacity="0.5" />
-          {/* 多只逃跑的蚊子 */}
-          {[
-            {startX: 62, startY: 22, endX: 76, endY: 8, dur: 2, flip: false},
-            {startX: 16, startY: 28, endX: 2, endY: 14, dur: 1.8, flip: true},
-            {startX: 64, startY: 58, endX: 78, endY: 72, dur: 2.2, flip: false},
-            {startX: 14, startY: 55, endX: 2, endY: 68, dur: 1.9, flip: true}
-          ].map((mosquito, i) => (
+
+          {/* 魔法星星装饰 */}
+          {[{x: 8, y: 10, delay: 0}, {x: 70, y: 8, delay: 0.5}, {x: 6, y: 72, delay: 1}].map((star, i) => (
             <g key={i}>
-              <g transform={`translate(${mosquito.startX}, ${mosquito.startY})`}>
-                <ellipse cx="0" cy="0" rx="4" ry="2.5" fill="#64748b" />
-                <circle cx={mosquito.flip ? 2 : -2} cy="-1" r="1.5" fill="#94a3b8" />
-                {/* 翅膀震动 */}
-                <ellipse cx={mosquito.flip ? -2 : 2} cy="-2" rx="3" ry="1" fill="#94a3b8" opacity="0.6">
-                  <animate attributeName="ry" values="1;2;1" dur="0.1s" repeatCount="indefinite" />
-                </ellipse>
-                {/* 逃跑线 */}
-                <path d={mosquito.flip ? "M -4 0 L -8 -2 M -4 1 L -8 1" : "M 4 0 L 8 -2 M 4 1 L 8 1"} stroke="#94a3b8" strokeWidth="1" />
-              </g>
-              <animateTransform attributeName="transform" type="translate" values={`${mosquito.startX},${mosquito.startY};${mosquito.endX},${mosquito.endY}`} dur={`${mosquito.dur}s`} repeatCount="indefinite" />
+              <polygon points={`${star.x},${star.y - 3.5} ${star.x + 1.2},${star.y - 1} ${star.x + 3.5},${star.y - 1} ${star.x + 1.8},${star.y + 0.5} ${star.x + 2.5},${star.y + 3.5} ${star.x},${star.y + 1.8} ${star.x - 2.5},${star.y + 3.5} ${star.x - 1.8},${star.y + 0.5} ${star.x - 3.5},${star.y - 1} ${star.x - 1.2},${star.y - 1}`} fill="#fbbf24">
+                <animate attributeName="opacity" values="1;0.4;1" dur={`${1.5 + i * 0.3}s`} begin={`${star.delay}s`} repeatCount="indefinite" />
+                <animateTransform attributeName="transform" type="rotate" values={`0 ${star.x} ${star.y};360 ${star.x} ${star.y}`} dur="8s" repeatCount="indefinite" />
+              </polygon>
+              <circle cx={star.x} cy={star.y} r="2" fill="#fef08a" opacity="0.5">
+                <animate attributeName="r" values="2;4;2" dur={`${1.5 + i * 0.3}s`} begin={`${star.delay}s`} repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.5;0;0.5" dur={`${1.5 + i * 0.3}s`} begin={`${star.delay}s`} repeatCount="indefinite" />
+              </circle>
             </g>
           ))}
-          {/* 双层保护盾 */}
-          <circle cx="40" cy="45" r="18" fill="none" stroke="#86efac" strokeWidth="2" strokeDasharray="4,3" opacity="0.6">
-            <animate attributeName="stroke-dashoffset" values="0;14" dur="1s" repeatCount="indefinite" />
+
+          {/* 精油瓶主体 - 玻璃质感 */}
+          <g>
+            {/* 瓶身阴影 */}
+            <ellipse cx="41" cy="74" rx="12" ry="3" fill="#000000" opacity="0.15" />
+
+            {/* 瓶身 */}
+            <path d="M 28 38 L 28 62 Q 28 67 33 68 L 47 68 Q 52 67 52 62 L 52 38 Q 52 36 50 36 L 30 36 Q 28 36 28 38" fill="url(#bottleGlass)" stroke="#22c55e" strokeWidth="1.5" opacity="0.9" />
+
+            {/* 液体 */}
+            <path d="M 29.5 42 L 29.5 62 Q 29.5 66 33.5 66.5 L 46.5 66.5 Q 50.5 66 50.5 62 L 50.5 42 Z" fill="url(#oilLiquid)" opacity="0.85">
+              <animate attributeName="d" values="M 29.5 42 L 29.5 62 Q 29.5 66 33.5 66.5 L 46.5 66.5 Q 50.5 66 50.5 62 L 50.5 42 Z;M 29.5 43 L 29.5 62 Q 29.5 66 33.5 66.5 L 46.5 66.5 Q 50.5 66 50.5 62 L 50.5 43 Z;M 29.5 42 L 29.5 62 Q 29.5 66 33.5 66.5 L 46.5 66.5 Q 50.5 66 50.5 62 L 50.5 42 Z" dur="3s" repeatCount="indefinite" />
+            </path>
+
+            {/* 玻璃高光 - 左侧 */}
+            <ellipse cx="32" cy="50" rx="3" ry="12" fill="white" opacity="0.5">
+              <animate attributeName="opacity" values="0.5;0.3;0.5" dur="2s" repeatCount="indefinite" />
+            </ellipse>
+
+            {/* 玻璃高光 - 右侧小点 */}
+            <ellipse cx="48" cy="48" rx="1.5" ry="5" fill="white" opacity="0.4">
+              <animate attributeName="opacity" values="0.4;0.2;0.4" dur="2.5s" repeatCount="indefinite" />
+            </ellipse>
+
+            {/* 瓶颈 */}
+            <rect x="36" y="28" width="8" height="9" fill="#86efac" rx="1.5" stroke="#22c55e" strokeWidth="1" opacity="0.9" />
+
+            {/* 瓶盖 */}
+            <rect x="35" y="22" width="10" height="7" fill="url(#capMetal)" rx="2.5" stroke="#d97706" strokeWidth="1" />
+            <ellipse cx="40" cy="22" rx="4" ry="1.5" fill="#fef3c7" opacity="0.6" />
+
+            {/* 瓶盖顶部纹理 */}
+            {[24, 25.5, 27].map((y, i) => (
+              <line key={i} x1="36" y1={y} x2="44" y2={y} stroke="#d97706" strokeWidth="0.5" opacity="0.4" />
+            ))}
+          </g>
+
+          {/* 香茅标签 */}
+          <rect x="32.5" y="46" width="15" height="18" fill="white" rx="2" opacity="0.95" stroke="#22c55e" strokeWidth="0.8" />
+          {/* 标签上的香茅叶图案 */}
+          <g transform="translate(40, 55)">
+            <path d="M -1 6 Q -3 0 -1 -6 Q 1 0 -1 6" fill="url(#leafOil1)">
+              <animate attributeName="d" values="M -1 6 Q -3 0 -1 -6 Q 1 0 -1 6;M -1 6 Q -3.5 0 -1 -6 Q 1.5 0 -1 6;M -1 6 Q -3 0 -1 -6 Q 1 0 -1 6" dur="2s" repeatCount="indefinite" />
+            </path>
+            <path d="M 1 6 Q 3 0 1 -5 Q -1 0 1 6" fill="url(#leafOil2)">
+              <animate attributeName="d" values="M 1 6 Q 3 0 1 -5 Q -1 0 1 6;M 1 6 Q 3.5 0 1 -5 Q -1.5 0 1 6;M 1 6 Q 3 0 1 -5 Q -1 0 1 6" dur="2.2s" repeatCount="indefinite" />
+            </path>
+            <path d="M 0 5 L 0 -5" stroke="#15803d" strokeWidth="0.6" opacity="0.5" />
+          </g>
+
+          {/* 瓶子周围的香茅叶片 - 更真实的扁平叶 */}
+          {/* 左侧叶片1 */}
+          <g transform="translate(18, 50)">
+            <path d="M 0 8 Q -2 0 0 -12 Q 2 0 0 8" fill="url(#leafOil1)" stroke="#22c55e" strokeWidth="0.5" opacity="0.85">
+              <animate attributeName="d" values="M 0 8 Q -2 0 0 -12 Q 2 0 0 8;M 0 8 Q -2.5 0 0 -13 Q 2.5 0 0 8;M 0 8 Q -2 0 0 -12 Q 2 0 0 8" dur="3s" repeatCount="indefinite" />
+            </path>
+            <path d="M 0 6 L 0 -10" stroke="#15803d" strokeWidth="0.4" opacity="0.4" />
+          </g>
+
+          {/* 左侧叶片2 */}
+          <g transform="translate(22, 58) rotate(-15)">
+            <path d="M 0 6 Q -1.5 0 0 -10 Q 1.5 0 0 6" fill="url(#leafOil2)" stroke="#4ade80" strokeWidth="0.5" opacity="0.8">
+              <animate attributeName="d" values="M 0 6 Q -1.5 0 0 -10 Q 1.5 0 0 6;M 0 6 Q -2 0 0 -11 Q 2 0 0 6;M 0 6 Q -1.5 0 0 -10 Q 1.5 0 0 6" dur="2.5s" repeatCount="indefinite" />
+            </path>
+          </g>
+
+          {/* 右侧叶片1 */}
+          <g transform="translate(62, 52)">
+            <path d="M 0 8 Q -2 0 0 -14 Q 2 0 0 8" fill="url(#leafOil1)" stroke="#22c55e" strokeWidth="0.5" opacity="0.85">
+              <animate attributeName="d" values="M 0 8 Q -2 0 0 -14 Q 2 0 0 8;M 0 8 Q -2.5 0 0 -15 Q 2.5 0 0 8;M 0 8 Q -2 0 0 -14 Q 2 0 0 8" dur="3.2s" repeatCount="indefinite" />
+            </path>
+            <path d="M 0 7 L 0 -12" stroke="#15803d" strokeWidth="0.4" opacity="0.4" />
+          </g>
+
+          {/* 右侧叶片2 */}
+          <g transform="translate(58, 60) rotate(12)">
+            <path d="M 0 5 Q -1.5 0 0 -9 Q 1.5 0 0 5" fill="url(#leafOil2)" stroke="#4ade80" strokeWidth="0.5" opacity="0.8">
+              <animate attributeName="d" values="M 0 5 Q -1.5 0 0 -9 Q 1.5 0 0 5;M 0 5 Q -2 0 0 -10 Q 2 0 0 5;M 0 5 Q -1.5 0 0 -9 Q 1.5 0 0 5" dur="2.8s" repeatCount="indefinite" />
+            </path>
+          </g>
+
+          {/* 上方叶片 */}
+          <g transform="translate(40, 18)">
+            <path d="M 0 5 Q -2.5 0 0 -8 Q 2.5 0 0 5" fill="url(#leafOil1)" stroke="#22c55e" strokeWidth="0.5" opacity="0.9">
+              <animate attributeName="d" values="M 0 5 Q -2.5 0 0 -8 Q 2.5 0 0 5;M 0 5 Q -3 0 0 -9 Q 3 0 0 5;M 0 5 Q -2.5 0 0 -8 Q 2.5 0 0 5" dur="2.6s" repeatCount="indefinite" />
+            </path>
+            <path d="M 0 4 L 0 -6" stroke="#15803d" strokeWidth="0.4" opacity="0.5" />
+          </g>
+
+          {/* 魔法粒子上升 - 更多样化 */}
+          {[
+            {x: 25, y: 55, delay: 0, dur: 2.5, color: "#a78bfa"},
+            {x: 32, y: 60, delay: 0.3, dur: 2.8, color: "#86efac"},
+            {x: 40, y: 58, delay: 0.6, dur: 2.3, color: "#c084fc"},
+            {x: 48, y: 62, delay: 0.9, dur: 2.6, color: "#a3e635"},
+            {x: 55, y: 56, delay: 1.2, dur: 2.4, color: "#e9d5ff"}
+          ].map((particle, i) => (
+            <g key={i}>
+              <circle cx={particle.x} cy={particle.y} r="1.5" fill={particle.color}>
+                <animate attributeName="cy" values={`${particle.y};${particle.y - 35};${particle.y - 50}`} dur={`${particle.dur}s`} begin={`${particle.delay}s`} repeatCount="indefinite" />
+                <animate attributeName="opacity" values="1;0.6;0" dur={`${particle.dur}s`} begin={`${particle.delay}s`} repeatCount="indefinite" />
+                <animate attributeName="r" values="1.5;2;0.8" dur={`${particle.dur}s`} begin={`${particle.delay}s`} repeatCount="indefinite" />
+              </circle>
+            </g>
+          ))}
+
+          {/* 逃跑的蚊子 - 更生动 */}
+          {[
+            {startX: 65, startY: 20, endX: 78, endY: 6, dur: 1.8, flip: false, path: "M0,0 Q8,-5 16,-14"},
+            {startX: 15, startY: 25, endX: 2, endY: 10, dur: 2, flip: true, path: "M0,0 Q-7,-6 -13,-15"},
+            {startX: 68, startY: 60, endX: 78, endY: 74, dur: 2.1, flip: false, path: "M0,0 Q6,8 10,14"},
+            {startX: 12, startY: 58, endX: 2, endY: 70, dur: 1.9, flip: true, path: "M0,0 Q-5,7 -10,12"}
+          ].map((mosquito, i) => (
+            <g key={i} opacity="0.85">
+              <animateMotion path={mosquito.path} dur={`${mosquito.dur}s`} repeatCount="indefinite" />
+              <g transform={`translate(${mosquito.startX}, ${mosquito.startY})`}>
+                {/* 蚊子身体 */}
+                <ellipse cx="0" cy="0" rx="3.5" ry="2" fill="#475569" stroke="#334155" strokeWidth="0.5" />
+
+                {/* 头部 */}
+                <circle cx={mosquito.flip ? 2.5 : -2.5} cy="-0.5" r="1.3" fill="#64748b" />
+
+                {/* 触角 */}
+                <line x1={mosquito.flip ? 2.5 : -2.5} y1="-1.5" x2={mosquito.flip ? 3.5 : -3.5} y2="-3" stroke="#334155" strokeWidth="0.5" />
+
+                {/* 翅膀 - 快速震动 */}
+                <g opacity="0.7">
+                  <ellipse cx={mosquito.flip ? -1.5 : 1.5} cy="-1.8" rx="3" ry="1.2" fill="#cbd5e1">
+                    <animate attributeName="ry" values="1.2;2.5;1.2" dur="0.08s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.7;0.4;0.7" dur="0.08s" repeatCount="indefinite" />
+                  </ellipse>
+                  <ellipse cx={mosquito.flip ? -1.8 : 1.8} cy="-1.5" rx="2.5" ry="1" fill="#e2e8f0">
+                    <animate attributeName="ry" values="1;2;1" dur="0.08s" begin="0.04s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.6;0.3;0.6" dur="0.08s" begin="0.04s" repeatCount="indefinite" />
+                  </ellipse>
+                </g>
+
+                {/* 逃跑速度线 */}
+                <g stroke="#94a3b8" strokeWidth="1" strokeLinecap="round">
+                  <line x1={mosquito.flip ? -3.5 : 3.5} y1="-0.5" x2={mosquito.flip ? -6 : 6} y2="-1">
+                    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="0.5s" repeatCount="indefinite" />
+                  </line>
+                  <line x1={mosquito.flip ? -3.5 : 3.5} y1="0.5" x2={mosquito.flip ? -5.5 : 5.5} y2="1">
+                    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="0.5s" begin="0.2s" repeatCount="indefinite" />
+                  </line>
+                </g>
+
+                {/* 惊恐符号 */}
+                <text x={mosquito.flip ? 4 : -4} y="-4" fontSize="6" textAnchor="middle">!</text>
+              </g>
+            </g>
+          ))}
+
+          {/* 多层保护盾 - 更精致 */}
+          {/* 内层绿色盾 */}
+          <circle cx="40" cy="45" r="20" fill="none" stroke="#86efac" strokeWidth="2.5" strokeDasharray="5,3" opacity="0.7">
+            <animate attributeName="stroke-dashoffset" values="0;16" dur="1.2s" repeatCount="indefinite" />
+            <animate attributeName="r" values="20;21;20" dur="2s" repeatCount="indefinite" />
           </circle>
-          <circle cx="40" cy="45" r="23" fill="none" stroke="#c084fc" strokeWidth="1.5" strokeDasharray="3,4" opacity="0.4">
-            <animate attributeName="stroke-dashoffset" values="14;0" dur="1.5s" repeatCount="indefinite" />
+
+          {/* 中层紫色盾 */}
+          <circle cx="40" cy="45" r="25" fill="none" stroke="#c084fc" strokeWidth="2" strokeDasharray="4,4" opacity="0.5">
+            <animate attributeName="stroke-dashoffset" values="16;0" dur="1.5s" repeatCount="indefinite" />
+            <animate attributeName="r" values="25;26;25" dur="2.5s" repeatCount="indefinite" />
           </circle>
+
+          {/* 外层粉色盾 */}
+          <circle cx="40" cy="45" r="28" fill="none" stroke="#f0abfc" strokeWidth="1.5" strokeDasharray="3,5" opacity="0.4">
+            <animate attributeName="stroke-dashoffset" values="0;16" dur="2s" repeatCount="indefinite" />
+            <animate attributeName="r" values="28;29;28" dur="3s" repeatCount="indefinite" />
+          </circle>
+
+          {/* 保护盾闪光点 */}
+          {[0, 72, 144, 216, 288].map((angle, i) => (
+            <circle
+              key={i}
+              cx={40 + 24 * Math.cos((angle * Math.PI) / 180)}
+              cy={45 + 24 * Math.sin((angle * Math.PI) / 180)}
+              r="2"
+              fill="white"
+              opacity="0.8"
+            >
+              <animate attributeName="opacity" values="0.8;0.3;0.8" dur="1.5s" begin={`${i * 0.3}s`} repeatCount="indefinite" />
+              <animateTransform attributeName="transform" type="rotate" values={`0 40 45;360 40 45`} dur="8s" repeatCount="indefinite" />
+            </circle>
+          ))}
         </svg>
       ),
       bgColor: "from-purple-100 to-pink-100",

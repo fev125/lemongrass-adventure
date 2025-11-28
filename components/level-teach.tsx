@@ -39,7 +39,7 @@ export function LevelTeach({ level, levelIndex, totalLevels, onComplete, onBack 
         : showVideoMagic
           ? "/香茅的魔法.mp4"
           : ""
-  const videoMuted = showVideoAppearance
+  const videoMuted = showVideoAppearance || showVideoMagic
   const videoScale = showVideoHome ? 1.3 : 1.0
 
   useEffect(() => {
